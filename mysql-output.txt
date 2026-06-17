@@ -1,0 +1,14 @@
+Database
+A-SOPHEAP_Sothiphak-db
+information_schema
+mysql
+performance_schema
+sys
+Tables_in_A-SOPHEAP_Sothiphak-db
+profiles
+templates
+id	code	layout	name	organization_name	primary_color	secondary_color	tagline	text_color
+1	classic-blue	VERTICAL	Classic Blue (Vertical)	Apex University	#1d4ed8	#eff6ff	Excellence in Education	#1e3a8a
+2	modern-emerald	VERTICAL	Modern Emerald (Vertical)	Greenwood Academy	#047857	#ecfdf5	Striving for a Greener Future	#064e3b
+3	sleek-dark	HORIZONTAL	Sleek Dark (Horizontal)	Nova Tech Corporation	#1e293b	#f1f5f9	Innovation & Integrity	#0f172a
+4	warm-amber	HORIZONTAL	Warm Amber (Horizontal)	Horizon Creative Labs	#b45309	#fffbeb	Creativity & Growth	#78350f
