@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura ID Card Suite - Premium ID Management</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="app-container">
+        
+        <!-- App Header (Full Width) -->
+        <header class="app-header full-width-section">
+            <div>
+                <h1 class="brand-title"><i class="fa-solid fa-id-card-clip"></i> AURA ID CARD SUITE</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.25rem;">Enterprise-Grade Student & Employee Credentials Generator</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" onclick="openTemplateModal()">
+                    <i class="fa-solid fa-palette"></i> Create Template
+                </button>
+                <button class="btn btn-primary" onclick="openProfileModal(false)">
+                    <i class="fa-solid fa-plus"></i> New Profile
+                </button>
+            </div>
+        </header>
+
+        <!-- LEFT COLUMN: Profile Creation/Edit & Live Preview -->
+        <main class="glass-panel" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700;"><i class="fa-solid fa-circle-info"></i> Card Live Preview</h2>
+                <span class="badge badge-student" id="previewStatus" style="font-size: 0.7rem; text-transform: uppercase;">Real-time Sync</span>
+            </div>
+
+            <!-- ID Card Mock container -->
+            <div class="preview-container">
+                <div class="id-card vertical" id="cardMock">
+                    <div class="id-card-header" id="cardHeader">
+                        <div class="card-org-name" id="cardOrgVal">APEX UNIVERSITY</div>
+                        <div class="card-org-tagline" id="cardTaglineVal">Excellence in Education</div>
+                    </div>
+                    <div class="id-card-body">
+                        <div class="card-photo-container" id="cardPhotoContainer">
+                            <img src="" class="card-photo" id="cardPhotoVal" style="display: none;">
+                            <div class="card-photo-placeholder" id="cardPhotoPlaceholderVal">
+                                <i class="fa-regular fa-user" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                                PHOTO
+                            </div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-name" id="cardNameVal">Full Name</div>
+                            <div class="card-title" id="cardTitleVal">Title / Role</div>
+                            <div class="card-dept" id="cardDeptVal">Department</div>
+                            <div class="card-reg" id="cardRegVal">ID: REG-NUMBER</div>
+                            <div class="card-meta" id="cardBloodVal">Blood: -</div>
+                        </div>
+                        <div class="card-codes">
+                            <div class="card-barcode-container">
+                                <img src="" class="card-barcode-img" id="cardBarcodeVal" style="display: none;">
+                                <div class="card-barcode-label" id="cardBarcodeLabelVal">REG-NUMBER</div>
+                            </div>
+                            <div class="card-qrcode-container">
+                                <img src="" class="card-qrcode-img" id="cardQrVal" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+                <i class="fa-solid fa-circle-exclamation"></i> Preview color themes are derived dynamically from the selected template.
+            </div>
+        </main>
+
+        <!-- RIGHT COLUMN: Database Profile List -->
+        <section class="glass-panel" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700;"><i class="fa-solid fa-users"></i> Profile Directory</h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div class="form-group" style="margin-bottom: 0; position: relative;">
+                        <input type="text" id="tableSearch" class="form-input" placeholder="Search by name..." oninput="filterProfiles()" style="padding: 0.5rem 1rem; width: 200px; font-size: 0.85rem;">
+                    </div>
+                    <button class="btn btn-secondary" id="btnBatchPdf" onclick="downloadBatchPdf()" disabled style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-file-pdf"></i> Export Selected (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profiles Table -->
+            <div class="table-container">
+                <table class="profile-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; text-align: center;">
+                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                            </th>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Reg Number</th>
+                            <th>Department</th>
+                            <th>Type</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profilesTableBody">
+                        <!-- Populated by JavaScript -->
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                                Loading profile database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- PROFILE MODAL (CREATE / EDIT) -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+            <h3 id="modalTitle" style="font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 700;">New Profile</h3>
+            
+            <form id="profileForm" onsubmit="saveProfile(event)" enctype="multipart/form-data">
+                <input type="hidden" id="profileId">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem;">
+                    <!-- Left Side: Image upload & details -->
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">Photo Upload (JPEG/PNG, &lt;5MB)</label>
+                            <div class="photo-upload-zone" onclick="document.getElementById('photoInput').click()">
+                                <img src="" class="photo-upload-preview" id="photoUploadPreview">
+                                <div id="uploadPlaceholder">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;"></i>
+                                    <span>Browse Photo</span>
+                                </div>
+                            </div>
+                            <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/jpg" style="display: none;" onchange="handlePhotoSelect(event)">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="profileType">Profile Type</label>
+                            <select id="profileType" class="form-select" required onchange="triggerLivePreview()">
+                                <option value="STUDENT">STUDENT</option>
+                                <option value="EMPLOYEE">EMPLOYEE</option>
+                                <option value="USER">USER</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="barcodeType">Barcode Type</label>
+                            <select id="barcodeType" class="form-select" required onchange="triggerLivePreview()">
+                                <option value="CODE_128">CODE_128 (Alphanumeric)</option>
+                                <option value="EAN_13">EAN_13 (13 Digits only)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Text details -->
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" for="fullName">Full Name</label>
+                            <input type="text" id="fullName" class="form-input" required placeholder="John Doe" oninput="triggerLivePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="department">Department</label>
+                            <input type="text" id="department" class="form-input" placeholder="e.g. Computer Science" oninput="triggerLivePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="title">Title / Class</label>
+                            <input type="text" id="title" class="form-input" placeholder="e.g. Senior Lecturer / Grade 10" oninput="triggerLivePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" id="email" class="form-input" placeholder="john.doe@company.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone</label>
+                            <input type="text" id="phone" class="form-input" placeholder="+1-555-1234">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="bloodGroup">Blood Group</label>
+                            <select id="bloodGroup" class="form-select" onchange="triggerLivePreview()">
+                                <option value="">Select Blood Group</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="issueDate">Issue Date</label>
+                        <input type="date" id="issueDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="expiryDate">Expiry Date</label>
+                        <input type="date" id="expiryDate" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="templateSelect">Card Template Theme</label>
+                    <select id="templateSelect" class="form-select" required onchange="triggerLivePreview()">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="registrationNumber">Custom Registration Number (Optional)</label>
+                    <input type="text" id="registrationNumber" class="form-input" placeholder="Auto-generated if empty" oninput="triggerLivePreview()">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveProfile">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TEMPLATE CREATOR MODAL -->
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" onclick="closeTemplateModal()">&times;</button>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 700;">Create Custom Theme Template</h3>
+            
+            <form id="templateForm" onsubmit="saveTemplate(event)">
+                <div class="form-group">
+                    <label class="form-label" for="templateCode">Template Code (Unique identifier)</label>
+                    <input type="text" id="templateCode" class="form-input" required placeholder="e.g. electric-violet">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="templateName">Template Name</label>
+                    <input type="text" id="templateName" class="form-input" required placeholder="e.g. Electric Violet (V)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="orgName">Organization Name</label>
+                    <input type="text" id="orgName" class="form-input" required placeholder="e.g. Apex Labs">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="tagline">Tagline</label>
+                    <input type="text" id="tagline" class="form-input" placeholder="e.g. Innovation in Action">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="layoutSelect">Layout Orientation</label>
+                    <select id="layoutSelect" class="form-select" required>
+                        <option value="VERTICAL">VERTICAL</option>
+                        <option value="HORIZONTAL">HORIZONTAL</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="primaryColor">Primary Color</label>
+                        <input type="color" id="primaryColor" class="form-input" style="height: 45px; padding: 2px;" value="#6366f1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="secondaryColor">Secondary Color</label>
+                        <input type="color" id="secondaryColor" class="form-input" style="height: 45px; padding: 2px;" value="#e0e7ff">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="textColor">Text Color</label>
+                        <input type="color" id="textColor" class="form-input" style="height: 45px; padding: 2px;" value="#312e81">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD JAVASCRIPT -->
+    <script>
+        let allProfiles = [];
+        let allTemplates = [];
+        let selectedProfileIds = new Set();
+        let isEditMode = false;
+        let previewDebounceTimer;
+
+        // On document load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInitialData();
+            
+            // Set default dates in form: issueDate=today, expiryDate=today+1 year
+            const today = new Date().toISOString().split('T')[0];
+            const nextYear = new Date();
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+            const expiry = nextYear.toISOString().split('T')[0];
+            
+            document.getElementById('issueDate').value = today;
+            document.getElementById('expiryDate').value = expiry;
+        });
+
+        // Show toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (type === 'error') {
+                toast.style.borderLeftColor = 'var(--danger)';
+            } else if (type === 'success') {
+                toast.style.borderLeftColor = 'var(--accent-green)';
+            }
+            
+            toast.innerHTML = `
+                <span>${message}</span>
+                <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="this.parentElement.remove()"></i>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+
+        // Load templates and profiles
+        async function loadInitialData() {
+            try {
+                // Fetch templates
+                const tRes = await fetch('/api/templates');
+                allTemplates = await tRes.json();
+                
+                // Populate template selector
+                const templateSelect = document.getElementById('templateSelect');
+                templateSelect.innerHTML = allTemplates.map(t => 
+                    `<option value="${t.id}">${t.name} (${t.organizationName})</option>`
+                ).join('');
+
+                // Fetch profiles
+                await loadProfiles();
+                
+                // Trigger initial live preview based on defaults
+                triggerLivePreview();
+            } catch (err) {
+                showToast('Failed to load database elements.', 'error');
+            }
+        }
+
+        async function loadProfiles() {
+            try {
+                const pRes = await fetch('/api/profiles');
+                allProfiles = await pRes.json();
+                renderProfilesTable(allProfiles);
+            } catch (err) {
+                showToast('Failed to load profiles.', 'error');
+            }
+        }
+
+        function renderProfilesTable(profiles) {
+            const tbody = document.getElementById('profilesTableBody');
+            if (profiles.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2.5rem;">
+                            <i class="fa-solid fa-users-slash" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                            No profiles registered in the system yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = profiles.map(p => {
+                const photoSrc = p.photoFileName ? `/api/profiles/photos/${p.photoFileName}` : '';
+                const photoHtml = photoSrc 
+                    ? `<img src="${photoSrc}" class="avatar-thumbnail">`
+                    : `<div class="avatar-thumbnail" style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size: 0.7rem;">NO PHOTO</div>`;
+                
+                const typeClass = p.type ? `badge-${p.type.toLowerCase()}` : 'badge-user';
+                const isChecked = selectedProfileIds.has(p.id) ? 'checked' : '';
+
+                return `
+                    <tr id="profile-row-${p.id}">
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="profile-select-checkbox" data-id="${p.id}" ${isChecked} onchange="handleCheckboxChange(${p.id}, this)">
+                        </td>
+                        <td>${photoHtml}</td>
+                        <td style="font-weight: 600; color: var(--text-primary);">${escapeHtml(p.fullName)}</td>
+                        <td style="font-family: monospace; font-size: 0.85rem; color: #60a5fa;">${escapeHtml(p.registrationNumber)}</td>
+                        <td>${escapeHtml(p.department || '-')}</td>
+                        <td><span class="badge ${typeClass}">${p.type}</span></td>
+                        <td style="text-align: center;">
+                            <div class="actions-cell">
+                                <button class="icon-btn" onclick="downloadSinglePdf(${p.id})" title="Download PDF">
+                                    <i class="fa-solid fa-file-arrow-down" style="color: var(--accent-blue);"></i>
+                                </button>
+                                <button class="icon-btn" onclick="editProfile(${p.id})" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="icon-btn delete" onclick="deleteProfile(${p.id})" title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Live Preview generator: queries the preview API to generate QR Code and Barcodes
+        function triggerLivePreview() {
+            clearTimeout(previewDebounceTimer);
+            previewDebounceTimer = setTimeout(async () => {
+                const fullName = document.getElementById('fullName').value || 'Full Name';
+                const type = document.getElementById('profileType').value;
+                const department = document.getElementById('department').value || 'Department Name';
+                const title = document.getElementById('title').value || 'Job Title / Class';
+                const registrationNumber = document.getElementById('registrationNumber').value || 'YEAR-DEPT-SEQUENCE';
+                const templateId = document.getElementById('templateSelect').value;
+                const barcodeType = document.getElementById('barcodeType').value;
+                const bloodGroup = document.getElementById('bloodGroup').value;
+
+                if (!templateId) return;
+
+                try {
+                    // Call preview API
+                    const formData = new URLSearchParams();
+                    formData.append('fullName', fullName);
+                    formData.append('type', type);
+                    formData.append('department', department);
+                    formData.append('title', title);
+                    formData.append('registrationNumber', registrationNumber);
+                    formData.append('templateId', templateId);
+                    formData.append('barcodeType', barcodeType);
+
+                    const res = await fetch('/api/profiles/preview', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+                    
+                    const data = await res.json();
+                    updateLivePreviewUI(data, bloodGroup);
+                } catch (err) {
+                    // Preview failed silently
+                }
+            }, 300);
+        }
+
+        function updateLivePreviewUI(data, bloodGroup) {
+            const card = document.getElementById('cardMock');
+            const template = data.template;
+            
+            // Layout orientation toggle
+            if (template.layout === 'HORIZONTAL') {
+                card.className = 'id-card horizontal';
+            } else {
+                card.className = 'id-card vertical';
+            }
+
+            // Colors
+            document.getElementById('cardHeader').style.backgroundColor = template.primaryColor;
+            card.style.backgroundColor = template.secondaryColor;
+            card.style.color = template.textColor;
+            document.getElementById('cardRegVal').style.color = template.primaryColor;
+
+            // Details
+            document.getElementById('cardOrgVal').innerText = template.organizationName || 'ORGANIZATION';
+            document.getElementById('cardTaglineVal').innerText = template.tagline || '';
+            document.getElementById('cardNameVal').innerText = data.fullName;
+            document.getElementById('cardTitleVal').innerText = data.type + ' | ' + data.title;
+            document.getElementById('cardDeptVal').innerText = data.department;
+            document.getElementById('cardRegVal').innerText = 'ID: ' + data.registrationNumber;
+            document.getElementById('cardBloodVal').innerText = bloodGroup ? 'Blood Group: ' + bloodGroup : 'Blood Group: -';
+
+            // Codes
+            const qrImg = document.getElementById('cardQrVal');
+            if (data.qrCodeBase64) {
+                qrImg.src = data.qrCodeBase64;
+                qrImg.style.display = 'block';
+            } else {
+                qrImg.style.display = 'none';
+            }
+
+            const barcodeImg = document.getElementById('cardBarcodeVal');
+            if (data.barcodeBase64) {
+                barcodeImg.src = data.barcodeBase64;
+                barcodeImg.style.display = 'block';
+            } else {
+                barcodeImg.style.display = 'none';
+            }
+            document.getElementById('cardBarcodeLabelVal').innerText = data.registrationNumber;
+        }
+
+        // Handle File Input Selection and preview local photo immediately on mock ID Card
+        function handlePhotoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate size
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Photo must be less than 5MB.', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Set modal preview
+                const modalPreview = document.getElementById('photoUploadPreview');
+                modalPreview.src = e.target.result;
+                modalPreview.style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+
+                // Set live card mock photo
+                const cardPhoto = document.getElementById('cardPhotoVal');
+                cardPhoto.src = e.target.result;
+                cardPhoto.style.display = 'block';
+                document.getElementById('cardPhotoPlaceholderVal').style.style = 'none';
+                document.getElementById('cardPhotoPlaceholderVal').style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Open Profile modal
+        function openProfileModal(edit = false, profileData = null) {
+            isEditMode = edit;
+            const modal = document.getElementById('profileModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('profileForm');
+            
+            form.reset();
+            
+            // Reset image upload previews
+            document.getElementById('photoUploadPreview').style.display = 'none';
+            document.getElementById('photoUploadPreview').src = '';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            const nextYear = new Date();
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+            document.getElementById('issueDate').value = today;
+            document.getElementById('expiryDate').value = nextYear.toISOString().split('T')[0];
+
+            if (edit && profileData) {
+                title.innerText = 'Edit Profile';
+                document.getElementById('profileId').value = profileData.id;
+                document.getElementById('fullName').value = profileData.fullName;
+                document.getElementById('profileType').value = profileData.type;
+                document.getElementById('department').value = profileData.department || '';
+                document.getElementById('title').value = profileData.title || '';
+                document.getElementById('email').value = profileData.email || '';
+                document.getElementById('phone').value = profileData.phone || '';
+                document.getElementById('bloodGroup').value = profileData.bloodGroup || '';
+                document.getElementById('dateOfBirth').value = profileData.dateOfBirth || '';
+                document.getElementById('issueDate').value = profileData.issueDate || '';
+                document.getElementById('expiryDate').value = profileData.expiryDate || '';
+                document.getElementById('barcodeType').value = profileData.barcodeType || 'CODE_128';
+                document.getElementById('registrationNumber').value = profileData.registrationNumber || '';
+                
+                if (profileData.template) {
+                    document.getElementById('templateSelect').value = profileData.template.id;
+                }
+
+                if (profileData.photoFileName) {
+                    const photoUrl = `/api/profiles/photos/${profileData.photoFileName}`;
+                    const modalPreview = document.getElementById('photoUploadPreview');
+                    modalPreview.src = photoUrl;
+                    modalPreview.style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+
+                    const cardPhoto = document.getElementById('cardPhotoVal');
+                    cardPhoto.src = photoUrl;
+                    cardPhoto.style.display = 'block';
+                    document.getElementById('cardPhotoPlaceholderVal').style.display = 'none';
+                } else {
+                    document.getElementById('cardPhotoVal').style.display = 'none';
+                    document.getElementById('cardPhotoPlaceholderVal').style.display = 'block';
+                }
+            } else {
+                title.innerText = 'New Profile';
+                document.getElementById('profileId').value = '';
+                document.getElementById('cardPhotoVal').style.display = 'none';
+                document.getElementById('cardPhotoPlaceholderVal').style.display = 'block';
+            }
+
+            modal.classList.add('active');
+            triggerLivePreview();
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        // Save Profile (Create / Edit)
+        async function saveProfile(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('profileId').value;
+            const url = id ? `/api/profiles/${id}` : '/api/profiles';
+            const method = id ? 'PUT' : 'POST';
+
+            const formData = new FormData();
+            formData.append('fullName', document.getElementById('fullName').value);
+            formData.append('type', document.getElementById('profileType').value);
+            formData.append('department', document.getElementById('department').value);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('bloodGroup', document.getElementById('bloodGroup').value);
+            formData.append('dateOfBirth', document.getElementById('dateOfBirth').value);
+            formData.append('issueDate', document.getElementById('issueDate').value);
+            formData.append('expiryDate', document.getElementById('expiryDate').value);
+            formData.append('templateId', document.getElementById('templateSelect').value);
+            formData.append('barcodeType', document.getElementById('barcodeType').value);
+            
+            const photoInput = document.getElementById('photoInput');
+            if (photoInput.files[0]) {
+                formData.append('photo', photoInput.files[0]);
+            }
+
+            // If updating, registration number can be sent as well
+            if (id) {
+                formData.append('registrationNumber', document.getElementById('registrationNumber').value);
+            } else if (document.getElementById('registrationNumber').value) {
+                formData.append('registrationNumber', document.getElementById('registrationNumber').value);
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+
+                if (res.ok) {
+                    showToast(id ? 'Profile updated successfully!' : 'Profile created successfully!', 'success');
+                    closeProfileModal();
+                    await loadProfiles();
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to save profile.', 'error');
+                }
+            } catch (err) {
+                showToast('Network error during operation.', 'error');
+            }
+        }
+
+        // Edit Profile Trigger
+        async function editProfile(id) {
+            const profile = allProfiles.find(p => p.id === id);
+            if (profile) {
+                openProfileModal(true, profile);
+            }
+        }
+
+        // Delete Profile Trigger
+        async function deleteProfile(id) {
+            if (confirm('Are you sure you want to delete this profile? All photo records and database attributes will be wiped.')) {
+                try {
+                    const res = await fetch(`/api/profiles/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        showToast('Profile deleted.', 'success');
+                        selectedProfileIds.delete(id);
+                        updateBatchButtonState();
+                        await loadProfiles();
+                    } else {
+                        showToast('Failed to delete profile.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error during deletion.', 'error');
+                }
+            }
+        }
+
+        // Single PDF Export Download
+        function downloadSinglePdf(id) {
+            const link = document.createElement('a');
+            link.href = `/api/profiles/${id}/pdf`;
+            link.download = `ID_Card_${id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Initiating PDF export...', 'info');
+        }
+
+        // Checkbox Handlers for Batch Generation
+        function handleCheckboxChange(id, checkbox) {
+            if (checkbox.checked) {
+                selectedProfileIds.add(id);
+            } else {
+                selectedProfileIds.delete(id);
+            }
+            updateBatchButtonState();
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllCheckbox');
+            const checkboxes = document.querySelectorAll('.profile-select-checkbox');
+            
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.getAttribute('data-id'));
+                cb.checked = selectAll.checked;
+                if (selectAll.checked) {
+                    selectedProfileIds.add(id);
+                } else {
+                    selectedProfileIds.delete(id);
+                }
+            });
+            updateBatchButtonState();
+        }
+
+        function updateBatchButtonState() {
+            const count = selectedProfileIds.size;
+            document.getElementById('selectedCount').innerText = count;
+            const btn = document.getElementById('btnBatchPdf');
+            btn.disabled = count === 0;
+        }
+
+        // Batch PDF Export Download
+        async function downloadBatchPdf() {
+            if (selectedProfileIds.size === 0) return;
+            
+            showToast('Generating batch ID cards PDF...', 'info');
+            try {
+                const res = await fetch('/api/profiles/batch/pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Array.from(selectedProfileIds))
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Batch_ID_Cards.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    showToast('Batch PDF downloaded successfully!', 'success');
+                } else {
+                    showToast('Failed to generate batch PDF.', 'error');
+                }
+            } catch (err) {
+                showToast('Network error during batch PDF export.', 'error');
+            }
+        }
+
+        // Open Template modal
+        function openTemplateModal() {
+            document.getElementById('templateForm').reset();
+            document.getElementById('templateModal').classList.add('active');
+        }
+
+        function closeTemplateModal() {
+            document.getElementById('templateModal').classList.remove('active');
+        }
+
+        // Save Custom Template
+        async function saveTemplate(event) {
+            event.preventDefault();
+            
+            const template = {
+                code: document.getElementById('templateCode').value,
+                name: document.getElementById('templateName').value,
+                organizationName: document.getElementById('orgName').value,
+                layout: document.getElementById('layoutSelect').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                textColor: document.getElementById('textColor').value,
+                tagline: document.getElementById('tagline').value
+            };
+
+            try {
+                const res = await fetch('/api/templates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(template)
+                });
+
+                if (res.ok) {
+                    showToast('Template created successfully!', 'success');
+                    closeTemplateModal();
+                    await loadInitialData();
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to create template.', 'error');
+                }
+            } catch (err) {
+                showToast('Network error while saving template.', 'error');
+            }
+        }
+
+        // Search & Filtering
+        function filterProfiles() {
+            const query = document.getElementById('tableSearch').value.toLowerCase();
+            const filtered = allProfiles.filter(p => 
+                p.fullName.toLowerCase().includes(query) || 
+                p.registrationNumber.toLowerCase().includes(query) ||
+                (p.department && p.department.toLowerCase().includes(query))
+            );
+            renderProfilesTable(filtered);
+        }
+    </script>
+</body>
+</html>

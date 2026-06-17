@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credential Verification | Aura ID Card Suite</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .verification-container {
+            max-width: 500px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+        .profile-card-details {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .profile-img-large {
+            width: 120px;
+            height: 145px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 3px solid var(--accent-blue);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        .profile-img-placeholder {
+            width: 120px;
+            height: 145px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 3px dashed rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="verification-container glass-panel">
+        
+        <div style="margin-bottom: 2rem;">
+            <h1 style="font-size: 1.75rem; font-weight: 800; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fa-solid fa-shield-halved"></i> Credential Verification
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Official Security Verification Registry</p>
+        </div>
+
+        <!-- NOT FOUND STATE -->
+        <div th:if="${!found}" style="padding: 2rem 0;">
+            <div class="seal seal-invalid" style="margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-circle-xmark"></i> Invalid Card
+            </div>
+            <p style="color: var(--text-primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                This credential could not be verified in our records.
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                The QR Code scanned does not match any active student or employee profile in the registry database. 
+                Please contact the administration office for clarification.
+            </p>
+        </div>
+
+        <!-- FOUND STATE -->
+        <div th:if="${found}">
+            
+            <!-- VERIFIED ACTIVE STATE -->
+            <div th:if="${active}" class="seal seal-valid" style="margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-circle-check"></i> Authentic Profile
+            </div>
+
+            <!-- VERIFIED EXPIRED STATE -->
+            <div th:if="${!active}" class="seal seal-expired" style="margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-circle-exclamation"></i> Credential Expired
+            </div>
+
+            <div class="profile-card-details">
+                <!-- User photo or placeholder -->
+                <div th:if="${profile.photoFileName != null}">
+                    <img th:src="@{/api/profiles/photos/{file}(file=${profile.photoFileName})}" class="profile-img-large">
+                </div>
+                <div th:if="${profile.photoFileName == null}" class="profile-img-placeholder">
+                    <i class="fa-regular fa-user" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+                    <span style="font-size: 0.8rem; font-weight: bold;">NO PHOTO</span>
+                </div>
+
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;" th:text="${profile.fullName}">John Doe</h2>
+                <span class="badge" th:classappend="${profile.type.name() == 'STUDENT' ? 'badge-student' : (profile.type.name() == 'EMPLOYEE' ? 'badge-employee' : 'badge-user')}" th:text="${profile.type}">STUDENT</span>
+
+                <!-- Info Grid -->
+                <div style="width: 100%; margin-top: 1.5rem;">
+                    <div class="detail-row">
+                        <span class="detail-label">ID / Reg Number</span>
+                        <span class="detail-value" style="font-family: monospace; color: #60a5fa;" th:text="${profile.registrationNumber}">2026-CS-8291</span>
+                    </div>
+                    <div class="detail-row" th:if="${profile.department != null && !profile.department.isEmpty()}">
+                        <span class="detail-label">Department</span>
+                        <span class="detail-value" th:text="${profile.department}">Computer Science</span>
+                    </div>
+                    <div class="detail-row" th:if="${profile.title != null && !profile.title.isEmpty()}">
+                        <span class="detail-label">Title / Class</span>
+                        <span class="detail-value" th:text="${profile.title}">Undergraduate</span>
+                    </div>
+                    <div class="detail-row" th:if="${profile.bloodGroup != null && !profile.bloodGroup.isEmpty()}">
+                        <span class="detail-label">Blood Group</span>
+                        <span class="detail-value" th:text="${profile.bloodGroup}">O+</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Issue Date</span>
+                        <span class="detail-value" th:text="${profile.issueDate}">2026-06-01</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Expiry Date</span>
+                        <span class="detail-value" th:text="${profile.expiryDate}">2027-06-01</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Database UUID</span>
+                        <span class="detail-value" style="font-size: 0.75rem; font-family: monospace;" th:text="${profile.uuid}">uuid-value</span>
+                    </div>
+                </div>
+
+                <!-- Display matching layout barcodes/QR codes generated on the fly -->
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                    <img th:src="${barcodeBase64}" style="height: 35px; width: 220px; object-fit: contain;">
+                    <span style="font-size: 0.6rem; color: var(--text-secondary); font-family: monospace;">SYSTEM BARCODE MATCH</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <a href="/" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>
