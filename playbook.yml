@@ -28,11 +28,10 @@
 
     - name: Show test execution output summary
       debug:
-        msg: "{{ test_output.stdout_lines[-30:] }}" # Show the last 30 lines of test output
+        msg: "{{ test_output.stdout_lines[-30:] }}" 
 
     - name: Backup MySQL database using mysqldump
       shell: mysqldump -h db -u root -pHello@123 A-SOPHEAP_Sothiphak-db > /app/backup.sql
-      # We use shell because of redirection operator '>'
 
     - name: Fetch database backup to host machine
       fetch:
