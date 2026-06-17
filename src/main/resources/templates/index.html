@@ -126,120 +126,162 @@
 
     <!-- PROFILE MODAL (CREATE / EDIT) -->
     <div class="modal-overlay" id="profileModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 950px;">
             <button class="modal-close" onclick="closeProfileModal()">&times;</button>
             <h3 id="modalTitle" style="font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 700;">New Profile</h3>
             
             <form id="profileForm" onsubmit="saveProfile(event)" enctype="multipart/form-data">
                 <input type="hidden" id="profileId">
                 
-                <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem;">
-                    <!-- Left Side: Image upload & details -->
-                    <div>
-                        <div class="form-group">
-                            <label class="form-label">Photo Upload (JPEG/PNG, &lt;5MB)</label>
-                            <div class="photo-upload-zone" onclick="document.getElementById('photoInput').click()">
-                                <img src="" class="photo-upload-preview" id="photoUploadPreview">
-                                <div id="uploadPlaceholder">
-                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;"></i>
-                                    <span>Browse Photo</span>
+                <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+                    <!-- LEFT COLUMN IN MODAL: Card Live Preview -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.4); border-radius: 12px; padding: 1.5rem; border: 1px dashed rgba(255, 255, 255, 0.1); height: max-content; align-self: start;">
+                        <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; text-align: center;"><i class="fa-solid fa-circle-info"></i> Card Live Preview</h4>
+                        
+                        <div class="id-card vertical" id="modalCardMock" style="transform: scale(0.95); transform-origin: top center; margin-bottom: -15px;">
+                            <div class="id-card-header" id="modalCardHeader">
+                                <div class="card-org-name" id="modalCardOrgVal">APEX UNIVERSITY</div>
+                                <div class="card-org-tagline" id="modalCardTaglineVal">Excellence in Education</div>
+                            </div>
+                            <div class="id-card-body">
+                                <div class="card-photo-container" id="modalCardPhotoContainer">
+                                    <img src="" class="card-photo" id="modalCardPhotoVal" style="display: none;">
+                                    <div class="card-photo-placeholder" id="modalCardPhotoPlaceholderVal">
+                                        <i class="fa-regular fa-user" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                                        PHOTO
+                                    </div>
+                                </div>
+                                <div class="card-details">
+                                    <div class="card-name" id="modalCardNameVal">Full Name</div>
+                                    <div class="card-title" id="modalCardTitleVal">Title / Role</div>
+                                    <div class="card-dept" id="modalCardDeptVal">Department</div>
+                                    <div class="card-reg" id="modalCardRegVal">ID: REG-NUMBER</div>
+                                    <div class="card-meta" id="modalCardBloodVal">Blood: -</div>
+                                </div>
+                                <div class="card-codes">
+                                    <div class="card-barcode-container">
+                                        <img src="" class="card-barcode-img" id="modalCardBarcodeVal" style="display: none;">
+                                        <div class="card-barcode-label" id="modalCardBarcodeLabelVal">REG-NUMBER</div>
+                                    </div>
+                                    <div class="card-qrcode-container">
+                                        <img src="" class="card-qrcode-img" id="modalCardQrVal" style="display: none;">
+                                    </div>
                                 </div>
                             </div>
-                            <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/jpg" style="display: none;" onchange="handlePhotoSelect(event)">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="profileType">Profile Type</label>
-                            <select id="profileType" class="form-select" required onchange="triggerLivePreview()">
-                                <option value="STUDENT">STUDENT</option>
-                                <option value="EMPLOYEE">EMPLOYEE</option>
-                                <option value="USER">USER</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="barcodeType">Barcode Type</label>
-                            <select id="barcodeType" class="form-select" required onchange="triggerLivePreview()">
-                                <option value="CODE_128">CODE_128 (Alphanumeric)</option>
-                                <option value="EAN_13">EAN_13 (13 Digits only)</option>
-                            </select>
                         </div>
                     </div>
 
-                    <!-- Right Side: Text details -->
+                    <!-- RIGHT COLUMN IN MODAL: Form Inputs -->
                     <div>
-                        <div class="form-group">
-                            <label class="form-label" for="fullName">Full Name</label>
-                            <input type="text" id="fullName" class="form-input" required placeholder="John Doe" oninput="triggerLivePreview()">
+                        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem;">
+                            <!-- Image upload & select elements -->
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Photo Upload (JPEG/PNG, &lt;5MB)</label>
+                                    <div class="photo-upload-zone" onclick="document.getElementById('photoInput').click()">
+                                        <img src="" class="photo-upload-preview" id="photoUploadPreview">
+                                        <div id="uploadPlaceholder">
+                                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;"></i>
+                                            <span>Browse Photo</span>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/jpg" style="display: none;" onchange="handlePhotoSelect(event)">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="profileType">Profile Type</label>
+                                    <select id="profileType" class="form-select" required onchange="triggerLivePreview()">
+                                        <option value="STUDENT">STUDENT</option>
+                                        <option value="EMPLOYEE">EMPLOYEE</option>
+                                        <option value="USER">USER</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="barcodeType">Barcode Type</label>
+                                    <select id="barcodeType" class="form-select" required onchange="triggerLivePreview()">
+                                        <option value="CODE_128">CODE_128 (Alphanumeric)</option>
+                                        <option value="EAN_13">EAN_13 (13 Digits only)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Text inputs -->
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label" for="fullName">Full Name</label>
+                                    <input type="text" id="fullName" class="form-input" required placeholder="John Doe" oninput="triggerLivePreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Department</label>
+                                    <input type="text" id="department" class="form-input" placeholder="e.g. Computer Science" oninput="triggerLivePreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="title">Title / Class</label>
+                                    <input type="text" id="title" class="form-input" placeholder="e.g. Senior Lecturer / Grade 10" oninput="triggerLivePreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email</label>
+                                    <input type="email" id="email" class="form-input" placeholder="john.doe@company.com">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Phone</label>
+                                    <input type="text" id="phone" class="form-input" placeholder="+1-555-1234">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="bloodGroup">Blood Group</label>
+                                    <select id="bloodGroup" class="form-select" onchange="triggerLivePreview()">
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="dateOfBirth">Date of Birth</label>
+                                <input type="date" id="dateOfBirth" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="issueDate">Issue Date</label>
+                                <input type="date" id="issueDate" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="expiryDate">Expiry Date</label>
+                                <input type="date" id="expiryDate" class="form-input">
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="department">Department</label>
-                            <input type="text" id="department" class="form-input" placeholder="e.g. Computer Science" oninput="triggerLivePreview()">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="title">Title / Class</label>
-                            <input type="text" id="title" class="form-input" placeholder="e.g. Senior Lecturer / Grade 10" oninput="triggerLivePreview()">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="email">Email</label>
-                            <input type="email" id="email" class="form-input" placeholder="john.doe@company.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="phone">Phone</label>
-                            <input type="text" id="phone" class="form-input" placeholder="+1-555-1234">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="bloodGroup">Blood Group</label>
-                            <select id="bloodGroup" class="form-select" onchange="triggerLivePreview()">
-                                <option value="">Select Blood Group</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
+                            <label class="form-label" for="templateSelect">Card Template Theme</label>
+                            <select id="templateSelect" class="form-select" required onchange="triggerLivePreview()">
+                                <!-- Populated by JavaScript -->
                             </select>
                         </div>
-                    </div>
-                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                    <div class="form-group">
-                        <label class="form-label" for="dateOfBirth">Date of Birth</label>
-                        <input type="date" id="dateOfBirth" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="issueDate">Issue Date</label>
-                        <input type="date" id="issueDate" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="expiryDate">Expiry Date</label>
-                        <input type="date" id="expiryDate" class="form-input">
-                    </div>
-                </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="registrationNumber">Custom Registration Number (Optional)</label>
+                            <input type="text" id="registrationNumber" class="form-input" placeholder="Auto-generated if empty" oninput="triggerLivePreview()">
+                        </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="templateSelect">Card Template Theme</label>
-                    <select id="templateSelect" class="form-select" required onchange="triggerLivePreview()">
-                        <!-- Populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="registrationNumber">Custom Registration Number (Optional)</label>
-                    <input type="text" id="registrationNumber" class="form-input" placeholder="Auto-generated if empty" oninput="triggerLivePreview()">
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
-                    <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btnSaveProfile">Save Profile</button>
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                            <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="btnSaveProfile">Save Profile</button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -415,6 +457,9 @@
                         <td><span class="badge ${typeClass}">${p.type}</span></td>
                         <td style="text-align: center;">
                             <div class="actions-cell">
+                                <button class="icon-btn" onclick="previewProfileOnDashboard(${p.id})" title="Preview on Dashboard">
+                                    <i class="fa-solid fa-eye" style="color: var(--accent-purple);"></i>
+                                </button>
                                 <button class="icon-btn" onclick="downloadSinglePdf(${p.id})" title="Download PDF">
                                     <i class="fa-solid fa-file-arrow-down" style="color: var(--accent-blue);"></i>
                                 </button>
@@ -479,47 +524,69 @@
 
         function updateLivePreviewUI(data, bloodGroup) {
             const card = document.getElementById('cardMock');
+            const modalCard = document.getElementById('modalCardMock');
             const template = data.template;
             
             // Layout orientation toggle
             if (template.layout === 'HORIZONTAL') {
-                card.className = 'id-card horizontal';
+                if (card) card.className = 'id-card horizontal';
+                if (modalCard) modalCard.className = 'id-card horizontal';
             } else {
-                card.className = 'id-card vertical';
+                if (card) card.className = 'id-card vertical';
+                if (modalCard) modalCard.className = 'id-card vertical';
             }
 
-            // Colors
-            document.getElementById('cardHeader').style.backgroundColor = template.primaryColor;
-            card.style.backgroundColor = template.secondaryColor;
-            card.style.color = template.textColor;
-            document.getElementById('cardRegVal').style.color = template.primaryColor;
+            const updateCardElements = (prefix) => {
+                const header = document.getElementById(prefix + 'CardHeader');
+                const root = document.getElementById(prefix + 'CardMock');
+                const reg = document.getElementById(prefix + 'CardRegVal');
+                const org = document.getElementById(prefix + 'CardOrgVal');
+                const tagline = document.getElementById(prefix + 'CardTaglineVal');
+                const name = document.getElementById(prefix + 'CardNameVal');
+                const title = document.getElementById(prefix + 'CardTitleVal');
+                const dept = document.getElementById(prefix + 'CardDeptVal');
+                const blood = document.getElementById(prefix + 'CardBloodVal');
+                const qrImg = document.getElementById(prefix + 'CardQrVal');
+                const barcodeImg = document.getElementById(prefix + 'CardBarcodeVal');
+                const barcodeLabel = document.getElementById(prefix + 'CardBarcodeLabelVal');
 
-            // Details
-            document.getElementById('cardOrgVal').innerText = template.organizationName || 'ORGANIZATION';
-            document.getElementById('cardTaglineVal').innerText = template.tagline || '';
-            document.getElementById('cardNameVal').innerText = data.fullName;
-            document.getElementById('cardTitleVal').innerText = data.type + ' | ' + data.title;
-            document.getElementById('cardDeptVal').innerText = data.department;
-            document.getElementById('cardRegVal').innerText = 'ID: ' + data.registrationNumber;
-            document.getElementById('cardBloodVal').innerText = bloodGroup ? 'Blood Group: ' + bloodGroup : 'Blood Group: -';
+                if (header) header.style.backgroundColor = template.primaryColor;
+                if (root) {
+                    root.style.backgroundColor = template.secondaryColor;
+                    root.style.color = template.textColor;
+                }
+                if (reg) {
+                    reg.style.color = template.primaryColor;
+                    reg.innerText = 'ID: ' + data.registrationNumber;
+                }
+                if (org) org.innerText = template.organizationName || 'ORGANIZATION';
+                if (tagline) tagline.innerText = template.tagline || '';
+                if (name) name.innerText = data.fullName;
+                if (title) title.innerText = data.type + ' | ' + data.title;
+                if (dept) dept.innerText = data.department;
+                if (blood) blood.innerText = bloodGroup ? 'Blood Group: ' + bloodGroup : 'Blood Group: -';
 
-            // Codes
-            const qrImg = document.getElementById('cardQrVal');
-            if (data.qrCodeBase64) {
-                qrImg.src = data.qrCodeBase64;
-                qrImg.style.display = 'block';
-            } else {
-                qrImg.style.display = 'none';
-            }
+                if (qrImg) {
+                    if (data.qrCodeBase64) {
+                        qrImg.src = data.qrCodeBase64;
+                        qrImg.style.display = 'block';
+                    } else {
+                        qrImg.style.display = 'none';
+                    }
+                }
+                if (barcodeImg) {
+                    if (data.barcodeBase64) {
+                        barcodeImg.src = data.barcodeBase64;
+                        barcodeImg.style.display = 'block';
+                    } else {
+                        barcodeImg.style.display = 'none';
+                    }
+                }
+                if (barcodeLabel) barcodeLabel.innerText = data.registrationNumber;
+            };
 
-            const barcodeImg = document.getElementById('cardBarcodeVal');
-            if (data.barcodeBase64) {
-                barcodeImg.src = data.barcodeBase64;
-                barcodeImg.style.display = 'block';
-            } else {
-                barcodeImg.style.display = 'none';
-            }
-            document.getElementById('cardBarcodeLabelVal').innerText = data.registrationNumber;
+            updateCardElements('');
+            updateCardElements('modal');
         }
 
         // Handle File Input Selection and preview local photo immediately on mock ID Card
@@ -544,10 +611,23 @@
 
                 // Set live card mock photo
                 const cardPhoto = document.getElementById('cardPhotoVal');
-                cardPhoto.src = e.target.result;
-                cardPhoto.style.display = 'block';
-                document.getElementById('cardPhotoPlaceholderVal').style.style = 'none';
-                document.getElementById('cardPhotoPlaceholderVal').style.display = 'none';
+                if (cardPhoto) {
+                    cardPhoto.src = e.target.result;
+                    cardPhoto.style.display = 'block';
+                }
+                const cardPhotoPl = document.getElementById('cardPhotoPlaceholderVal');
+                if (cardPhotoPl) cardPhotoPl.style.display = 'none';
+
+                // Set modal card mock photo
+                const modalCardPhoto = document.getElementById('modalCardPhotoVal');
+                if (modalCardPhoto) {
+                    modalCardPhoto.src = e.target.result;
+                    modalCardPhoto.style.display = 'block';
+                }
+                const modalCardPhotoPl = document.getElementById('modalCardPhotoPlaceholderVal');
+                if (modalCardPhotoPl) {
+                    modalCardPhotoPl.style.display = 'none';
+                }
             }
             reader.readAsDataURL(file);
         }
@@ -601,18 +681,48 @@
                     document.getElementById('uploadPlaceholder').style.display = 'none';
 
                     const cardPhoto = document.getElementById('cardPhotoVal');
-                    cardPhoto.src = photoUrl;
-                    cardPhoto.style.display = 'block';
-                    document.getElementById('cardPhotoPlaceholderVal').style.display = 'none';
+                    if (cardPhoto) {
+                        cardPhoto.src = photoUrl;
+                        cardPhoto.style.display = 'block';
+                    }
+                    const cardPhotoPl = document.getElementById('cardPhotoPlaceholderVal');
+                    if (cardPhotoPl) cardPhotoPl.style.display = 'none';
+
+                    const modalCardPhoto = document.getElementById('modalCardPhotoVal');
+                    if (modalCardPhoto) {
+                        modalCardPhoto.src = photoUrl;
+                        modalCardPhoto.style.display = 'block';
+                    }
+                    const modalCardPhotoPl = document.getElementById('modalCardPhotoPlaceholderVal');
+                    if (modalCardPhotoPl) {
+                        modalCardPhotoPl.style.display = 'none';
+                    }
                 } else {
-                    document.getElementById('cardPhotoVal').style.display = 'none';
-                    document.getElementById('cardPhotoPlaceholderVal').style.display = 'block';
+                    const cardPhoto = document.getElementById('cardPhotoVal');
+                    if (cardPhoto) cardPhoto.style.display = 'none';
+                    const cardPhotoPl = document.getElementById('cardPhotoPlaceholderVal');
+                    if (cardPhotoPl) cardPhotoPl.style.display = 'block';
+
+                    const modalCardPhoto = document.getElementById('modalCardPhotoVal');
+                    if (modalCardPhoto) modalCardPhoto.style.display = 'none';
+                    const modalCardPhotoPl = document.getElementById('modalCardPhotoPlaceholderVal');
+                    if (modalCardPhotoPl) modalCardPhotoPl.style.display = 'block';
                 }
             } else {
                 title.innerText = 'New Profile';
                 document.getElementById('profileId').value = '';
-                document.getElementById('cardPhotoVal').style.display = 'none';
-                document.getElementById('cardPhotoPlaceholderVal').style.display = 'block';
+                
+                const cardPhoto = document.getElementById('cardPhotoVal');
+                if (cardPhoto) cardPhoto.style.display = 'none';
+                const cardPhotoPl = document.getElementById('cardPhotoPlaceholderVal');
+                if (cardPhotoPl) cardPhotoPl.style.display = 'block';
+
+                const modalCardPhoto = document.getElementById('modalCardPhotoVal');
+                if (modalCardPhoto) modalCardPhoto.style.display = 'none';
+                const modalCardPhotoPl = document.getElementById('modalCardPhotoPlaceholderVal');
+                if (modalCardPhotoPl) {
+                    modalCardPhotoPl.style.display = 'block';
+                }
             }
 
             modal.classList.add('active');
@@ -621,6 +731,51 @@
 
         function closeProfileModal() {
             document.getElementById('profileModal').classList.remove('active');
+        }
+
+        // Preview an existing profile directly on the main dashboard preview pane
+        async function previewProfileOnDashboard(id) {
+            const profile = allProfiles.find(p => p.id === id);
+            if (!profile) return;
+            
+            try {
+                // Update photo on the dashboard card preview
+                const cardPhoto = document.getElementById('cardPhotoVal');
+                const cardPhotoPl = document.getElementById('cardPhotoPlaceholderVal');
+                if (profile.photoFileName) {
+                    const photoUrl = `/api/profiles/photos/${profile.photoFileName}`;
+                    cardPhoto.src = photoUrl;
+                    cardPhoto.style.display = 'block';
+                    cardPhotoPl.style.display = 'none';
+                } else {
+                    cardPhoto.style.display = 'none';
+                    cardPhotoPl.style.display = 'block';
+                }
+                
+                // Call preview API to generate barcodes and retrieve template details
+                const formData = new URLSearchParams();
+                formData.append('fullName', profile.fullName);
+                formData.append('type', profile.type);
+                formData.append('department', profile.department || '');
+                formData.append('title', profile.title || '');
+                formData.append('registrationNumber', profile.registrationNumber);
+                if (profile.template) {
+                    formData.append('templateId', profile.template.id);
+                }
+                formData.append('barcodeType', profile.barcodeType || 'CODE_128');
+                
+                const res = await fetch('/api/profiles/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                
+                const data = await res.json();
+                updateLivePreviewUI(data, profile.bloodGroup);
+                showToast(`Viewing ID Card: ${profile.fullName}`, 'info');
+            } catch (err) {
+                showToast('Failed to load preview for profile.', 'error');
+            }
         }
 
         // Save Profile (Create / Edit)
