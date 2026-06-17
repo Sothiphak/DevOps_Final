@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: devops-web-server
+    ports:
+      - "8443:8080" # Expose 8443 (website) mapped to Nginx port 8080 in container
+      - "2222:22"   # Expose 2222 (SSH) mapped to port 22 in container
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/A-SOPHEAP_Sothiphak-db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Hello@123
+      - PORT=8080
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: devops-mysql-db
+    environment:
+      MYSQL_DATABASE: "A-SOPHEAP_Sothiphak-db"
+      MYSQL_ROOT_PASSWORD: "Hello@123"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
