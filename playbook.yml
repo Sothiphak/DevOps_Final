@@ -1,0 +1,41 @@
+---
+- name: DevOps final exercise - Web server configuration, build, test, and backup
+  hosts: webserver
+  gather_facts: no
+  tasks:
+    - name: Reset local git changes
+      command: git reset --hard
+      args:
+        chdir: /app
+
+    - name: Pull latest code from GitHub
+      git:
+        repo: 'https://github.com/Sothiphak/DevOps_Final.git'
+        dest: /app
+        version: main
+        force: yes
+
+    - name: Build project using Maven wrapper
+      command: ./mvnw clean package -DskipTests
+      args:
+        chdir: /app
+
+    - name: Run tests against SQLite database
+      command: ./mvnw test
+      args:
+        chdir: /app
+      register: test_output
+
+    - name: Show test execution output summary
+      debug:
+        msg: "{{ test_output.stdout_lines[-30:] }}" # Show the last 30 lines of test output
+
+    - name: Backup MySQL database using mysqldump
+      shell: mysqldump -h db -u root -pHello@123 A-SOPHEAP_Sothiphak-db > /app/backup.sql
+      # We use shell because of redirection operator '>'
+
+    - name: Fetch database backup to host machine
+      fetch:
+        src: /app/backup.sql
+        dest: ./backup.sql
+        flat: yes
