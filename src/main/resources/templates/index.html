@@ -536,19 +536,24 @@
                 if (modalCard) modalCard.className = 'id-card vertical';
             }
 
-            const updateCardElements = (prefix) => {
-                const header = document.getElementById(prefix + 'CardHeader');
-                const root = document.getElementById(prefix + 'CardMock');
-                const reg = document.getElementById(prefix + 'CardRegVal');
-                const org = document.getElementById(prefix + 'CardOrgVal');
-                const tagline = document.getElementById(prefix + 'CardTaglineVal');
-                const name = document.getElementById(prefix + 'CardNameVal');
-                const title = document.getElementById(prefix + 'CardTitleVal');
-                const dept = document.getElementById(prefix + 'CardDeptVal');
-                const blood = document.getElementById(prefix + 'CardBloodVal');
-                const qrImg = document.getElementById(prefix + 'CardQrVal');
-                const barcodeImg = document.getElementById(prefix + 'CardBarcodeVal');
-                const barcodeLabel = document.getElementById(prefix + 'CardBarcodeLabelVal');
+             const updateCardElements = (prefix) => {
+                const getEl = (suffix) => {
+                    const id = prefix ? (prefix + suffix) : (suffix.charAt(0).toLowerCase() + suffix.slice(1));
+                    return document.getElementById(id);
+                };
+
+                const header = getEl('CardHeader');
+                const root = getEl('CardMock');
+                const reg = getEl('CardRegVal');
+                const org = getEl('CardOrgVal');
+                const tagline = getEl('CardTaglineVal');
+                const name = getEl('CardNameVal');
+                const title = getEl('CardTitleVal');
+                const dept = getEl('CardDeptVal');
+                const blood = getEl('CardBloodVal');
+                const qrImg = getEl('CardQrVal');
+                const barcodeImg = getEl('CardBarcodeVal');
+                const barcodeLabel = getEl('CardBarcodeLabelVal');
 
                 if (header) header.style.backgroundColor = template.primaryColor;
                 if (root) {
