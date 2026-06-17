@@ -361,30 +361,30 @@ public class ProfileService {
             ColumnText ctDetails = new ColumnText(canvas);
             ctDetails.setSimpleColumn(15, 75, 225, 195);
             
-            Paragraph nameP = new Paragraph(profile.getFullName(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Font.BOLD, textColor));
+            Paragraph nameP = new Paragraph(profile.getFullName(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, Font.BOLD, textColor));
             nameP.setAlignment(Element.ALIGN_CENTER);
-            nameP.setSpacingAfter(4);
+            nameP.setSpacingAfter(5);
             ctDetails.addElement(nameP);
 
-            Paragraph roleP = new Paragraph(profile.getType().toString() + " | " + (profile.getTitle() != null ? profile.getTitle() : "Profile"), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, textColor));
+            Paragraph roleP = new Paragraph(profile.getType().toString() + " | " + (profile.getTitle() != null ? profile.getTitle() : "Profile"), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
             roleP.setAlignment(Element.ALIGN_CENTER);
-            roleP.setSpacingAfter(4);
+            roleP.setSpacingAfter(5);
             ctDetails.addElement(roleP);
 
             if (profile.getDepartment() != null && !profile.getDepartment().isBlank()) {
-                Paragraph deptP = new Paragraph("Dept: " + profile.getDepartment(), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, textColor));
+                Paragraph deptP = new Paragraph("Dept: " + profile.getDepartment(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
                 deptP.setAlignment(Element.ALIGN_CENTER);
-                deptP.setSpacingAfter(4);
+                deptP.setSpacingAfter(5);
                 ctDetails.addElement(deptP);
             }
 
-            Paragraph regP = new Paragraph("ID: " + profile.getRegistrationNumber(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, primaryColor));
+            Paragraph regP = new Paragraph("ID: " + profile.getRegistrationNumber(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Font.BOLD, primaryColor));
             regP.setAlignment(Element.ALIGN_CENTER);
-            regP.setSpacingAfter(4);
+            regP.setSpacingAfter(5);
             ctDetails.addElement(regP);
 
             if (profile.getBloodGroup() != null && !profile.getBloodGroup().isBlank()) {
-                Paragraph bloodP = new Paragraph("Blood Group: " + profile.getBloodGroup(), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, textColor));
+                Paragraph bloodP = new Paragraph("Blood Group: " + profile.getBloodGroup(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
                 bloodP.setAlignment(Element.ALIGN_CENTER);
                 ctDetails.addElement(bloodP);
             }
@@ -409,7 +409,7 @@ public class ProfileService {
             // Small text above barcode
             ColumnText ctBarcodeText = new ColumnText(canvas);
             ctBarcodeText.setSimpleColumn(15, 12, 145, 30);
-            Paragraph bText = new Paragraph("Scan for Verification", FontFactory.getFont(FontFactory.HELVETICA, 6, Font.NORMAL, textColor));
+            Paragraph bText = new Paragraph("Scan for Verification", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Font.BOLD, textColor));
             bText.setAlignment(Element.ALIGN_CENTER);
             ctBarcodeText.addElement(bText);
             ctBarcodeText.go();
@@ -478,26 +478,26 @@ public class ProfileService {
             ColumnText ctDetails = new ColumnText(canvas);
             ctDetails.setSimpleColumn(110, 60, 290, 180);
             
-            Paragraph nameP = new Paragraph(profile.getFullName(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Font.BOLD, textColor));
-            nameP.setSpacingAfter(3);
+            Paragraph nameP = new Paragraph(profile.getFullName(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, Font.BOLD, textColor));
+            nameP.setSpacingAfter(4);
             ctDetails.addElement(nameP);
 
-            Paragraph roleP = new Paragraph(profile.getType().toString() + " - " + (profile.getTitle() != null ? profile.getTitle() : "Profile"), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Font.BOLD, textColor));
-            roleP.setSpacingAfter(3);
+            Paragraph roleP = new Paragraph(profile.getType().toString() + " - " + (profile.getTitle() != null ? profile.getTitle() : "Profile"), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
+            roleP.setSpacingAfter(4);
             ctDetails.addElement(roleP);
 
             if (profile.getDepartment() != null && !profile.getDepartment().isBlank()) {
-                Paragraph deptP = new Paragraph("Dept: " + profile.getDepartment(), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, textColor));
-                deptP.setSpacingAfter(3);
+                Paragraph deptP = new Paragraph("Dept: " + profile.getDepartment(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
+                deptP.setSpacingAfter(4);
                 ctDetails.addElement(deptP);
             }
 
-            Paragraph regP = new Paragraph("ID Card No: " + profile.getRegistrationNumber(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, primaryColor));
-            regP.setSpacingAfter(3);
+            Paragraph regP = new Paragraph("ID Card No: " + profile.getRegistrationNumber(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Font.BOLD, primaryColor));
+            regP.setSpacingAfter(4);
             ctDetails.addElement(regP);
 
             if (profile.getBloodGroup() != null && !profile.getBloodGroup().isBlank()) {
-                Paragraph bloodP = new Paragraph("Blood: " + profile.getBloodGroup(), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, textColor));
+                Paragraph bloodP = new Paragraph("Blood: " + profile.getBloodGroup(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Font.BOLD, textColor));
                 ctDetails.addElement(bloodP);
             }
             ctDetails.go();
@@ -520,7 +520,7 @@ public class ProfileService {
             // Small text above barcode
             ColumnText ctBarcodeText = new ColumnText(canvas);
             ctBarcodeText.setSimpleColumn(15, 5, 235, 20);
-            Paragraph bText = new Paragraph("Registration Number Barcode (" + profile.getBarcodeType().toString() + ")", FontFactory.getFont(FontFactory.HELVETICA, 6, Font.NORMAL, textColor));
+            Paragraph bText = new Paragraph("Scan for Verification", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Font.BOLD, textColor));
             ctBarcodeText.addElement(bText);
             ctBarcodeText.go();
         }
